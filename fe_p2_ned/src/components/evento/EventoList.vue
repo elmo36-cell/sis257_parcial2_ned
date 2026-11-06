@@ -21,7 +21,8 @@ const eventosFiltrados = computed(() => {
     (evento) =>
       evento.titulo.toLowerCase().includes(busqueda.value.toLowerCase()) ||
       evento.artista_principal.toLowerCase().includes(busqueda.value.toLowerCase()) ||
-      evento.estado.toLowerCase().includes(busqueda.value.toLowerCase()),
+      evento.estado.toLowerCase().includes(busqueda.value.toLowerCase()) ||
+      (evento.tipo_entrada && evento.tipo_entrada.toLowerCase().includes(busqueda.value.toLowerCase())),
   )
 })
 
@@ -51,13 +52,13 @@ defineExpose({ obtenerLista })
 
 <template>
   <div class="card shadow-sm p-3 mb-5 bg-body rounded">
-    <!-- Read / Filtro de búsqueda -->
+    <!-- Filtro de búsqueda -->
     <InputGroup class="mb-3">
       <InputGroupAddon><i class="pi pi-search"></i></InputGroupAddon>
       <InputText v-model="busqueda" type="text" placeholder="Buscar por título, artista o estado..." />
     </InputGroup>
 
-    <!-- Tabla con diseño optimizado -->
+    <!-- Tabla con diseño -->
     <div class="table-responsive">
       <table class="table table-hover table-striped table-bordered align-middle mb-0">
         <thead class="table-dark text-center">
@@ -69,6 +70,7 @@ defineExpose({ obtenerLista })
             <th>Duración</th>
             <th>Precio</th>
             <th>Fecha</th>
+            <th>Tipo de Entrada</th>
             <th>Estado</th>
             <th>Acciones</th>
           </tr>
@@ -83,6 +85,11 @@ defineExpose({ obtenerLista })
             <td class="text-end">{{ evento.precio_entrada }} Bs</td>
             <td class="text-center">{{ evento.fecha_evento }}</td>
             <td class="text-center">
+              <span class="badge bg-secondary px-2 py-1">
+                {{ evento.tipo_entrada }}
+              </span>
+            </td>
+            <td class="text-center">
               <span class="badge px-2 py-1" :class="{
                 'bg-success': evento.estado === 'Programado',
                 'bg-warning text-dark': evento.estado === 'Agotado',
@@ -91,7 +98,7 @@ defineExpose({ obtenerLista })
                 {{ evento.estado }}
               </span>
             </td>
-            <!-- Update & Delete Actions -->
+
             <td class="text-center">
               <div class="d-flex justify-content-center gap-1">
                 <Button icon="pi pi-pencil" aria-label="Editar"
@@ -109,7 +116,7 @@ defineExpose({ obtenerLista })
       </table>
     </div>
 
-    <!-- Modal de confirmación para Delete -->
+    <!-- confirmacion para Delete -->
     <Dialog v-model:visible="mostrarConfirmDialog" header="Confirmar Eliminación" :style="{ width: '25rem' }" modal>
       <p class="m-0">¿Estás seguro de que deseas eliminar este evento cultural?</p>
       <template #footer>

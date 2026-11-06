@@ -15,16 +15,7 @@ const props = defineProps({
   modoEdicion: Boolean,
 })
 const emit = defineEmits(['guardar', 'close'])
-
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
 const evento = ref<any>({ ...props.evento })
-
-watch(
-  () => props.evento,
-  (newVal) => {
-    evento.value = { ...newVal }
-  },
-)
 
 const dialogVisible = computed({
   get: () => props.mostrar,
@@ -35,6 +26,17 @@ const dialogVisible = computed({
 
 const recintos = ref<IRecinto[]>([])
 const estados = ref(['Programado', 'Agotado', 'Cancelado'])
+const tiposEntrada = ref(['Entrada Pagada', 'Entrada gratuita', 'Pase de invitación'])
+
+watch(
+  () => evento.value.tipo_entrada,
+  (nuevoTipo) => {
+    if (nuevoTipo === 'entrada gratuita') {
+      evento.value.precio_entrada = 0
+      evento.value.estado = 'Programado'
+    }
+  }
+)
 
 async function obtenerRecintos() {
   recintos.value = await http.get('recintos').then((res) => res.data)
@@ -49,7 +51,10 @@ watch(
       if (props.evento?.id) {
         evento.value = { ...props.evento }
       } else {
-        evento.value = { estado: 'Programado' } as IEventoCultural
+        evento.value = {
+          estado: 'Programado',
+          tipo_entrada: 'Entrada Pagada'
+        } as IEventoCultural
       }
     }
   },
@@ -75,6 +80,7 @@ async function handleSave() {
       precio_entrada: Number(evento.value.precio_entrada),
       fecha_evento: evento.value.fecha_evento,
       estado: evento.value.estado,
+      tipo_entrada: evento.value.tipo_entrada,
     }
     if (props.modoEdicion) {
       await http.patch(`${ENDPOINT}/${evento.value.id}`, body)
@@ -108,6 +114,12 @@ async function handleSave() {
           <Select id="recinto" v-model="evento.id_recinto" :options="recintos" optionLabel="nombre" optionValue="id"
             class="w-full" filter placeholder="Seleccione un recinto" />
         </div>
+        <div class="field mb-3">
+          <label for="tipo_entrada" class="font-semibold block mb-2">Tipo de Entrada</label>
+          <Select id="tipo_entrada" v-model="evento.tipo_entrada" :options="tiposEntrada" class="w-full" required
+            placeholder="Seleccione el tipo de entrada" />
+        </div>
+
         <div class="field mb-3">
           <label for="duracion" class="font-semibold block mb-2">Duración (minutos)</label>
           <InputText id="duracion" v-model="duracionModel" type="number" class="w-full" autocomplete="off" required />

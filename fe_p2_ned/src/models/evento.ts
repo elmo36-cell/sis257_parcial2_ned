@@ -10,4 +10,5 @@ export interface IEventoCultural {
   precio_entrada: number
   fecha_evento: string
   estado: 'Programado' | 'Agotado' | 'Cancelado'
+  tipo_entrada: 'Entrada Pagada' | 'entrada gratuita' | 'pase invitacion'
 }

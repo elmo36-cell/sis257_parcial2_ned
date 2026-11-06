@@ -34,6 +34,9 @@ export class EventoCultural {
   @Column('varchar', { length: 20 })
   estado: string; // 'Programado', 'Agotado', 'Cancelado'
 
+  @Column({ type: 'varchar', length: 50, default: 'Entrada Pagada' })
+  tipo_entrada: string; //'Entrada Pagada', 'entrada gratuita', 'pase invitacion'
+
   @CreateDateColumn({ name: 'fecha_creacion' })
   fechaCreacion: Date;
 

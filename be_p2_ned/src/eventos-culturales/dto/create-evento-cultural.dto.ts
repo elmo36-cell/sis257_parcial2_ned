@@ -1,6 +1,15 @@
-import { ApiProperty } from "@nestjs/swagger";
-import { Transform } from "class-transformer";
-import { IsDateString, IsEnum, IsInt, IsNotEmpty, IsNumber, IsString, MaxLength } from "class-validator";
+import { ApiProperty } from '@nestjs/swagger';
+import { Transform } from 'class-transformer';
+import {
+  IsDateString,
+  IsEnum,
+  IsIn,
+  IsInt,
+  IsNotEmpty,
+  IsNumber,
+  IsString,
+  MaxLength,
+} from 'class-validator';
 
 export class CreateEventoCulturalDto {
   @ApiProperty()
@@ -34,7 +43,12 @@ export class CreateEventoCulturalDto {
 
   @ApiProperty({ example: '2026-12-31' })
   @IsNotEmpty({ message: 'La fecha del evento es obligatoria' })
-  @IsDateString({}, { message: 'La fecha del evento debe tener un formato válido (YYYY-MM-DD)' })
+  @IsDateString(
+    {},
+    {
+      message: 'La fecha del evento debe tener un formato válido (YYYY-MM-DD)',
+    },
+  )
   readonly fecha_evento: string;
 
   @ApiProperty({ enum: ['Programado', 'Agotado', 'Cancelado'] })
@@ -43,4 +57,15 @@ export class CreateEventoCulturalDto {
     message: 'El estado debe ser: Programado, Agotado o Cancelado',
   })
   readonly estado: string;
+
+  @ApiProperty({
+    example: 'Entrada Pagada',
+    enum: ['Entrada Pagada', 'entrada gratuita', 'pase invitacion'],
+  })
+  @IsNotEmpty({ message: 'El tipo de entrada es obligatorio' })
+  @IsString()
+  @IsIn(['Entrada Pagada', 'Entrada gratuita', 'Pase de invitación'], {
+    message: 'El tipo de entrada no es válido',
+  })
+  tipo_entrada: string;
 }
